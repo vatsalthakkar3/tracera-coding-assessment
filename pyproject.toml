@@ -1,0 +1,21 @@
+[project]
+name = "tracera-coding-assessment"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "ipykernel>=6.30.1",
+    "jupyter>=1.1.1",
+    "notebook>=7.4.5",
+    "numpy>=2.3.2",
+    "openai>=1.101.0",
+    "opencv-python>=4.11.0.86",
+    "pandas>=2.3.2",
+    "pdf2image>=1.17.0",
+    "pypdf2>=3.0.1",
+    "pytesseract>=0.3.13",
+    "python-dotenv>=1.1.1",
+    "requests>=2.32.5",
+    "torch>=2.8.0",
+]
