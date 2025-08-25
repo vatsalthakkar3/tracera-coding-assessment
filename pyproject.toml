@@ -2,6 +2,7 @@
 name = "tracera-coding-assessment"
 version = "0.1.0"
 description = "Add your description here"
+authors = [{ name = "Vatsal Thakkar", email = "vatsalthakkar3.vt@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -18,4 +19,32 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "requests>=2.32.5",
     "torch>=2.8.0",
+]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.10.5",
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.1",
+    "pytest-cov>=6.2.1",
+    "ruff>=0.12.10",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.pytest.ini_options]
+addopts = "--strict-markers --strict-config"
+testpaths = [
+    "tests",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = [
+    "*/__init__.py",
 ]
