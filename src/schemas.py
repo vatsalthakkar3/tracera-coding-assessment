@@ -1,4 +1,4 @@
-from typing import List, Union, Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
@@ -28,14 +28,14 @@ class ExtractedRecord(BaseModel):
         description="The end date of the billing period in YYYY-MM-DD format.",
         alias="To Date",
     )
-    usage: Optional[Union[float, str]] = Field(
+    usage: Optional[str] = Field(
         ...,
-        description="The total usage for the billing period as a number (e.g., kWh, Therms). Extract only the numeric value.",
+        description="The total usage for the billing period as a string with US-style number formatting. (e.g., kWh, Therms). Extract only the numeric value.",
         alias="Usage",
     )
-    cost: Optional[Union[float, str]] = Field(
+    cost: Optional[str] = Field(
         ...,
-        description="The total cost or amount due for the billing period. Extract only the numeric value.",
+        description="The total cost or amount due for the billing period as a string with US-style number formatting.",
         alias="Cost",
     )
 
