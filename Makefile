@@ -28,4 +28,5 @@ clean:
 	@echo "----------- Cleaning up -----------"
 	rm -rf htmlcov .pytest_cache .mypy_cache __pycache__ */__pycache__
 	rm -f .coverage
+	rm -rf htmlcov
 	@echo "----------- Cleanup Complete -----------"
