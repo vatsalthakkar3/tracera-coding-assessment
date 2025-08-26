@@ -1,5 +1,6 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
+import re
 
 
 class ExtractedRecord(BaseModel):
@@ -39,6 +40,20 @@ class ExtractedRecord(BaseModel):
         alias="Cost",
     )
 
+    @field_validator("usage", "cost")
+    def validate_us_number_format(cls, v):
+        """
+        Validates that the string is a number with US-style commas and up to two decimal places.
+        """
+        # Regex to match: optional thousands separators, optional decimal with up to two digits.
+        # This pattern also allows numbers without commas or decimals (e.g., '123' or '1,234').
+        pattern = r"^\d{1,3}(,\d{3})*(\.\d{1,2})?$"
+
+        if not re.match(pattern, v):
+            raise ValueError(f"'{v}' is not in a valid US number format (e.g., '1,234.56').")
+
+        return v
+
 
 class DocumentExtractionResult(BaseModel):
     """
@@ -49,3 +64,18 @@ class DocumentExtractionResult(BaseModel):
     records: List[ExtractedRecord] = Field(
         description="A list of all records extracted from the document."
     )
+
+
+if __name__ == "__main__":
+    # Example usage
+    sample_record = ExtractedRecord.model_validate(
+        {
+            "Account Number": "ACC-12345",
+            "Meter Number": "MTR-67890",
+            "From Date": "2023-01-01",
+            "To Date": "2023-01-31",
+            "Usage": "154,150.50",
+            "Cost": "54,575.25",
+        }
+    )
+    print(sample_record)
