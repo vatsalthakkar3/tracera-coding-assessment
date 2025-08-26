@@ -1,6 +1,5 @@
 from typing import List, Optional
-from pydantic import BaseModel, Field, field_validator
-import re
+from pydantic import BaseModel, Field
 
 
 class ExtractedRecord(BaseModel):
@@ -21,38 +20,45 @@ class ExtractedRecord(BaseModel):
     )
     from_date: Optional[str] = Field(
         ...,
-        description="The start date of the billing period in YYYY-MM-DD format.",
+        description="The start date of the billing period (for which the usage and cost are calculated) in YYYY-MM-DD format.",
         alias="From Date",
     )
     to_date: Optional[str] = Field(
         ...,
-        description="The end date of the billing period in YYYY-MM-DD format.",
+        description="The end date of the billing period (for which the usage and cost are calculated) in YYYY-MM-DD format.",
         alias="To Date",
     )
     usage: Optional[str] = Field(
         ...,
-        description="The total usage for the billing period as a string with US-style number formatting. (e.g., kWh, Therms). Extract only the numeric value.",
+        description="""
+        The total usage for the billing period as a string with US-style number formatting. (e.g., kWh, Therms). Extract only the numeric value.
+        US-style number formatting is expected (e.g., 1,234.56). Use comma as thousand separator. Do not use periods as thousand separators.
+        """,
         alias="Usage",
     )
     cost: Optional[str] = Field(
         ...,
-        description="The total cost or amount due for the billing period as a string with US-style number formatting.",
+        description="""
+        The total cost or amount due for the billing period as a string with US-style number formatting.
+        Extract only the numeric value, removing any currency symbols or units.
+        US-style number formatting is expected (e.g., 1,234.56). Use comma as thousand separator. Do not use periods as thousand separators.
+        """,
         alias="Cost",
     )
 
-    @field_validator("usage", "cost")
-    def validate_us_number_format(cls, v):
-        """
-        Validates that the string is a number with US-style commas and up to two decimal places.
-        """
-        # Regex to match: optional thousands separators, optional decimal with up to two digits.
-        # This pattern also allows numbers without commas or decimals (e.g., '123' or '1,234').
-        pattern = r"^\d{1,3}(,\d{3})*(\.\d{1,2})?$"
+    # @field_validator("usage", "cost")
+    # def validate_us_number_format(cls, v):
+    #     """
+    #     Validates that the string is a number with US-style commas and up to two decimal places.
+    #     """
+    #     # Regex to match: optional thousands separators, optional decimal with up to two digits.
+    #     # This pattern also allows numbers without commas or decimals (e.g., '123' or '1,234').
+    #     pattern = r"^\d{1,3}(,\d{3})*(\.\d{1,2})?$"
 
-        if not re.match(pattern, v):
-            raise ValueError(f"'{v}' is not in a valid US number format (e.g., '1,234.56').")
+    #     if not re.match(pattern, v):
+    #         raise ValueError(f"'{v}' is not in a valid US number format (e.g., '1,234.56').")
 
-        return v
+    #     return v
 
 
 class DocumentExtractionResult(BaseModel):
