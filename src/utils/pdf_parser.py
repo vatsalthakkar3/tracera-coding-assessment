@@ -31,7 +31,6 @@ class PDFParser:
         """
         try:
             documents: List[Document] = self.parser.load_data(str(file_path))
-            # Combine content from all parsed pages/sections into one string
             return "\n".join([doc.text for doc in documents])
         except Exception as e:
             print(f"Error parsing document {file_path.name}: {e}")
