@@ -13,6 +13,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DOCUMENTS_DIR = BASE_DIR / "data"
 OUTPUT_DIR = BASE_DIR / "output"
 OUTPUT_CSV_PATH = OUTPUT_DIR / "extracted_data.csv"
+CACHE_DIR = BASE_DIR / "cache"
 
 # --- LLM Configuration ---
 LLM_MODEL_NAME = "gpt-4o"
