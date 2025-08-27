@@ -1,9 +1,10 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import PydanticOutputParser
+from langchain.output_parsers import PydanticOutputParser
 
 from src.schemas import DocumentExtractionResult
-from src.config import OPENAI_API_KEY, LLM_MODEL_NAME
+from src.config import OPENAI_API_KEY, LLM_MODEL_NAME, GEMINI_API_KEY
 
 
 class LLMService:
@@ -33,18 +34,34 @@ class LLMService:
     {format_instructions}
     """
 
-    def __init__(self, model_name: str = LLM_MODEL_NAME, api_key: str = OPENAI_API_KEY):
+    def __init__(
+        self,
+        model_name: str = LLM_MODEL_NAME,
+        gemini_api_key: str = GEMINI_API_KEY,
+        openai_api_key: str = OPENAI_API_KEY,
+    ):
         """
         Initializes the LLMService.
 
         Args:
             model_name (str): The name of the OpenAI model to use.
-            api_key (str): The OpenAI API key.
+            gemini_api_key (str): The Gemini API key.
+            openai_api_key (str): The OpenAI API key.
         """
-        if not api_key:
-            raise ValueError("OpenAI API key is required for the LLM service.")
-        self.llm = ChatOpenAI(model=model_name, openai_api_key=api_key, temperature=0.1)
         self.output_parser = PydanticOutputParser(pydantic_object=DocumentExtractionResult)
+
+        if gemini_api_key:
+            print("Using Gemini LLM")
+            self.llm = ChatGoogleGenerativeAI(
+                model=model_name, google_api_key=gemini_api_key, temperature=0.1
+            )
+        elif openai_api_key:
+            print("Using OpenAI LLM as fallback")
+            self.llm = ChatOpenAI(model=model_name, openai_api_key=openai_api_key, temperature=0.1)
+        else:
+            raise ValueError(
+                "No API key provided for either Gemini or OpenAI.  Please set GEMINI_API_KEY or OPENAI_API_KEY in .env"
+            )
 
     def extract_structured_data(self, text_content: str) -> DocumentExtractionResult:
         """
