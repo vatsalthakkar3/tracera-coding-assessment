@@ -1,3 +1,4 @@
+import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
@@ -10,10 +11,10 @@ from src.config import OPENAI_API_KEY, LLM_MODEL_NAME, GEMINI_API_KEY
 class LLMService:
     """
     A service class for interacting with a LLM
-    to perform structured data extraction.
+    to perform structured data extraction and consolidation.
     """
 
-    PROMPT_TEMPLATE = """
+    EXTRACTION_PROMPT_TEMPLATE = """
     You are an expert AI assistant for extracting structured data from utility bills.
     Your task is to extract the specified fields from the document text provided below.
 
@@ -29,6 +30,26 @@ class LLMService:
     Document Text:
     ---
     {document_text}
+    ---
+
+    {format_instructions}
+    """
+
+    CONSOLIDATION_PROMPT_TEMPLATE = """
+    You are an expert data consolidation AI. You will be given a list of data records extracted from a single document.
+    These records may be duplicated, incomplete, or contain slight variations because they were extracted from different parts of the same document.
+
+    Your task is to analyze all the records and produce a final, clean, and unique list.
+    Follow these rules precisely:
+    1.  **Final Output Format:** Final Output should include all the files present in the input list, but without duplicates and with merged information where applicable. Use '-' for any missing fields.
+    2.  **Merge Duplicates:** Combine records that clearly refer to the same billing period or item. Use clues like account numbers, meter numbers, and overlapping dates to identify duplicates.
+    3.  **Prioritize Completeness:** When merging, create a single consolidated record. For each field, use the value that is most complete and accurate. For example, prefer '5356338-03' over '535633803'. Always prefer an actual value over a hyphen ('-').
+    4.  **Discard Noise:** Remove any records that are completely empty or contain no meaningful information (e.g., all fields are '-').
+    5.  **Maintain Structure:** The final output must be a clean list of unique records.
+    
+    Here is the list of raw, extracted records:
+    ---
+    {raw_records_json}
     ---
 
     {format_instructions}
@@ -74,7 +95,7 @@ class LLMService:
             DocumentExtractionResult: A Pydantic object containing the extracted records.
         """
         prompt = ChatPromptTemplate.from_template(
-            template=self.PROMPT_TEMPLATE,
+            template=self.EXTRACTION_PROMPT_TEMPLATE,
             partial_variables={"format_instructions": self.output_parser.get_format_instructions()},
         )
 
@@ -82,6 +103,37 @@ class LLMService:
 
         try:
             response = chain.invoke({"document_text": text_content})
+            return response
+        except Exception as e:
+            print(f"An error occurred during LLM invocation: {e}")
+            return DocumentExtractionResult(records=[])
+
+    def consolidate_records(self, records: DocumentExtractionResult) -> DocumentExtractionResult:
+        """
+        Uses an LLM call to clean, merge, and deduplicate a list of extracted records.
+
+        Args:
+            records (list[ExtractedRecord]): A list of extracted records to consolidate.
+
+        Returns:
+            DocumentExtractionResult: A Pydantic object containing the consolidated records.
+        """
+        if not records:
+            return DocumentExtractionResult(records=[])
+
+        # Convert the list of Pydantic models to a JSON string for the prompt
+        raw_records_json = json.dumps([r.model_dump(by_alias=False) for r in records], indent=2)
+
+        prompt = ChatPromptTemplate.from_template(
+            template=self.CONSOLIDATION_PROMPT_TEMPLATE,
+            partial_variables={"format_instructions": self.output_parser.get_format_instructions()},
+        )
+
+        chain = prompt | self.llm | self.output_parser
+
+        print("   Calling LLM to consolidate results...")
+        try:
+            response = chain.invoke({"raw_records_json": raw_records_json})
             return response
         except Exception as e:
             print(f"An error occurred during LLM invocation: {e}")
@@ -170,8 +222,10 @@ if __name__ == "__main__":
     ROSEMEAD, CA 91772-0002
     """
     result = llm_service.extract_structured_data(sample_text)
-    formatted_records = []
     for record in result.records:
-        record_dict = record.model_dump(by_alias=True, exclude_none=True)
-        formatted_records.append(record_dict)
-    print(formatted_records)
+        print(record.model_dump(by_alias=True, exclude_none=True))
+
+    consolidated_result = llm_service.consolidate_records(result.records)
+    print("Consolidated Records:")
+    for record in consolidated_result.records:
+        print(record.model_dump(by_alias=True, exclude_none=True))

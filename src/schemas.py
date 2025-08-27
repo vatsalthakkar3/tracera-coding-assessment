@@ -20,12 +20,12 @@ class ExtractedRecord(BaseModel):
     )
     from_date: Optional[str] = Field(
         ...,
-        description="The start date of the billing period (for which the usage and cost are calculated) in YYYY-MM-DD format.",
+        description="The start date of the billing period (for which the usage and cost are calculated) in YYYY-MM-DD format. This is not the due date.",
         alias="From Date",
     )
     to_date: Optional[str] = Field(
         ...,
-        description="The end date of the billing period (for which the usage and cost are calculated) in YYYY-MM-DD format.",
+        description="The end date of the billing period (for which the usage and cost are calculated) in YYYY-MM-DD format. This is not the due date.",
         alias="To Date",
     )
     usage: Optional[str] = Field(
