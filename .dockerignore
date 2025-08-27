@@ -1,0 +1,28 @@
+# Git
+.git
+.gitignore
+
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Python
+__pycache__/
+*.py[oc]
+.venv/*
+.venv/
+.coverage
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.env*
+
+# Project specific
+.DS_Store
+htmlcov/
+output/
+docs/
+*.md
+.pre-commit*
+

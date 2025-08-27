@@ -1,8 +1,13 @@
 # Use .PHONY to ensure these targets run even if files with the same name exist.
-.PHONY: all test coverage clean
+.PHONY: all test coverage clean run
 
 # Default command to run when you just type "make"
 all: test
+
+run:
+	@echo "----------- Running the application ----------"
+	uv run python -m src.main
+	@echo "----------- Application finished -----------"
 
 format:
 	@echo "----------- Running code formatter -----------"
