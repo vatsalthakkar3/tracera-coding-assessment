@@ -15,7 +15,7 @@ class ExtractedRecord(BaseModel):
     )
     meter_number: str = Field(
         ...,
-        description="The meter number for the utility service. Should be a string.",
+        description="The meter registration number for the utility service. Should be a string.",
         alias="Meter Number",
     )
     from_date: Optional[str] = Field(
@@ -31,7 +31,7 @@ class ExtractedRecord(BaseModel):
     usage: Optional[str] = Field(
         ...,
         description="""
-        The total usage for the billing period as a string with US-style number formatting. (e.g., kWh, Therms). Extract only the numeric value.
+        The total consumption or usage for the billing period for particular utility service as a string with US-style number formatting. (e.g., kWh, Therms, kL, MJ etc). Extract only the numeric value. This is not amount of money .
         US-style number formatting is expected (e.g., 1,234.56). Use comma as thousand separator. Do not use periods as thousand separators.
         """,
         alias="Usage",
@@ -45,20 +45,6 @@ class ExtractedRecord(BaseModel):
         """,
         alias="Cost",
     )
-
-    # @field_validator("usage", "cost")
-    # def validate_us_number_format(cls, v):
-    #     """
-    #     Validates that the string is a number with US-style commas and up to two decimal places.
-    #     """
-    #     # Regex to match: optional thousands separators, optional decimal with up to two digits.
-    #     # This pattern also allows numbers without commas or decimals (e.g., '123' or '1,234').
-    #     pattern = r"^\d{1,3}(,\d{3})*(\.\d{1,2})?$"
-
-    #     if not re.match(pattern, v):
-    #         raise ValueError(f"'{v}' is not in a valid US number format (e.g., '1,234.56').")
-
-    #     return v
 
 
 class DocumentExtractionResult(BaseModel):

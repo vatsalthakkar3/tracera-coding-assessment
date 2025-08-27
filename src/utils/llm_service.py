@@ -21,11 +21,12 @@ class LLMService:
     Follow these instructions carefully:
     1.  Extract all records present in the document. A single document may contain multiple billing periods or accounts.
     2.  For dates, normalize them to a standard 'YYYY-MM-DD' format.
-    3.  For 'Usage' and 'Cost', extract only the numerical values, removing any currency symbols or units.
-    4.  If a value for a field is not found in a record, you MUST represent it with a hyphen '-'. Do not leave it null or empty.
-    5.  Pay attention to regional differences in number and date formats (e.g., DD/MM/YYYY vs MM/DD/YYYY, or 1,000.00 vs 1.000,00) and normalize them.
-    6.  US-style number formatting is expected (e.g., 1,234.56). Use comma as thousand separator. Do not use periods as thousand separators.
-    7.  Ensure that the extracted data adheres to the schema provided in the format instructions.
+    3.  For `Usage` and `Cost`, extract only the numerical values, removing any currency symbols or units.
+    4.  `Usage` is the total consumption or usage for the billing period for particular utility service ( It may have unit e.g., kWh, Therms, kL, MJ etc but not any currency unit). Extract only the numeric value.
+    5.  If a value for a field is not found in a record, you MUST represent it with a hyphen '-'. Do not leave it null or empty.
+    6.  Pay attention to regional differences in number and date formats (e.g., DD/MM/YYYY vs MM/DD/YYYY, or 1,000.00 vs 1.000,00) and normalize them.
+    7.  US-style number formatting is expected (e.g., 1,234.56). Use comma as thousand separator. Do not use periods as thousand separators.
+    8.  Ensure that the extracted data adheres to the schema provided in the format instructions.
 
     Document Text:
     ---
@@ -41,11 +42,13 @@ class LLMService:
 
     Your task is to analyze all the records and produce a final, clean, and unique list.
     Follow these rules precisely:
-    1.  **Final Output Format:** Final Output should include all the files present in the input list, but without duplicates and with merged information where applicable. Use '-' for any missing fields.
+    1.  **Final Output Format:** Final Output should include all the files present in the input list, but without duplicates and with merged information where applicable.
     2.  **Merge Duplicates:** Combine records that clearly refer to the same billing period or item. Use clues like account numbers, meter numbers, and overlapping dates to identify duplicates.
     3.  **Prioritize Completeness:** When merging, create a single consolidated record. For each field, use the value that is most complete and accurate. For example, prefer '5356338-03' over '535633803'. Always prefer an actual value over a hyphen ('-').
     4.  **Discard Noise:** Remove any records that are completely empty or contain no meaningful information (e.g., all fields are '-').
-    5.  **Maintain Structure:** The final output must be a clean list of unique records.
+    5.  **Maintain Structure:** The final output must be a clean list of unique records. Final Records should contain account number.
+    6.  **US-style number formatting** is expected (e.g., 1,234.56). Use comma as thousand separator. Do not use periods as thousand separators. Use two decimal places for 'Cost' and 'Usage'.
+    7.  Discard any records which have more than 50% (percent) fields missing (i.e., having '-'). Use `-`for missing fields.
     
     Here is the list of raw, extracted records:
     ---
@@ -74,11 +77,11 @@ class LLMService:
         if gemini_api_key:
             print("Using Gemini LLM")
             self.llm = ChatGoogleGenerativeAI(
-                model=model_name, google_api_key=gemini_api_key, temperature=0.1
+                model=model_name, google_api_key=gemini_api_key, temperature=0.0
             )
         elif openai_api_key:
             print("Using OpenAI LLM as fallback")
-            self.llm = ChatOpenAI(model=model_name, openai_api_key=openai_api_key, temperature=0.1)
+            self.llm = ChatOpenAI(model=model_name, openai_api_key=openai_api_key, temperature=0.0)
         else:
             raise ValueError(
                 "No API key provided for either Gemini or OpenAI.  Please set GEMINI_API_KEY or OPENAI_API_KEY in .env"

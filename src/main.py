@@ -1,6 +1,6 @@
 import time
 from src.config import DOCUMENTS_DIR, OUTPUT_CSV_PATH, COLUMNS_TO_EXTRACT
-from src.utils.data_extractor import AdvancedDataExtractor
+from src.utils.data_extractor import DataExtractor
 from src.utils.file_handler import get_pdf_files, save_to_csv
 
 
@@ -20,10 +20,10 @@ def main():
 
     # ----------------------------- Initialize the extractor -----------------------------
     # For standard documents:
-    # extractor = DataExtractor()
+    extractor = DataExtractor()
 
     # For long documents that might exceed context limits (Experimental):
-    extractor = AdvancedDataExtractor(chunk_size=4000, chunk_overlap=300)
+    # extractor = AdvancedDataExtractor(chunk_size=4000, chunk_overlap=300)
     # -------------------------------------------------------------------------------------
 
     all_extracted_records = []

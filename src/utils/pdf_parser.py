@@ -18,7 +18,9 @@ class PDFParser:
         """
         if not api_key:
             raise ValueError("Llama Cloud API key is required for parsing PDFs.")
-        self.parser = LlamaParse(api_key=api_key, result_type="markdown", verbose=True)
+        self.parser = LlamaParse(
+            api_key=api_key, result_type="markdown", verbose=True, high_res_ocr=True
+        )
         self.cache_dir = Path(cache_dir)
         self.cache_dir.mkdir(exist_ok=True)
 
@@ -160,7 +162,7 @@ class PDFParser:
 if __name__ == "__main__":
     # Example usage
     parser = PDFParser()
-    sample_pdf_path = Path("./data/test1.pdf")
+    sample_pdf_path = Path("./data/test7.pdf")
     content = parser.parse_document(sample_pdf_path)
 
     # Write the parsed content to a markdown file for inspection

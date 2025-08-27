@@ -39,11 +39,20 @@ class DataExtractor:
         # --- Use LLM to extract structured data ---
         extraction_result = self.llm_service.extract_structured_data(document_text)
 
+        # --- Consolidate Stage ---
+        try:
+            consolidated_result = self.llm_service.consolidate_records(extraction_result.records)
+            final_records = consolidated_result.records
+        except Exception as e:
+            print(f"   [Error] Failed to consolidate records: {e}. Returning raw data.")
+            final_records = extraction_result.records
+
         # --- Format the results ---
         formatted_records = []
-        for record in extraction_result.records:
+        for record in final_records:
             record_dict = record.model_dump(by_alias=True, exclude_none=True)
             record_dict["Filename"] = file_path.name.split(".pdf")[0]
+            print(record_dict)
             formatted_records.append(record_dict)
 
         print(f"   => Found {len(formatted_records)} records in {file_path.name}")
