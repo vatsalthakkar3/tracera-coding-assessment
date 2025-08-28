@@ -218,6 +218,31 @@ docker run --rm -it --env-file .env -v ./data:/app/data -v ./output:/app/output 
 uv run python -m src.main
 ```
 
+## Interactive Walkthrough
+
+For a detailed, step-by-step guide through the entire data extraction pipeline, you can use the interactive Jupyter Notebook provided in this project.
+
+- **Location**: `Notebook/project_walkthrough.ipynb`
+
+This notebook explains each component, from parsing PDFs to the final data consolidation, with runnable code cells that allow you to inspect the output at every stage.
+
+### How to Run the Notebook
+
+1.  Ensure you have installed the project dependencies (`uv pip sync`).
+2.  Make sure your `.env` file is correctly set up with the required API keys.
+3.  Launch Jupyter Lab or Jupyter Notebook from your terminal:
+
+    ```bash
+    # To launch Jupyter Lab
+    uv run jupyter lab
+    ```
+    or
+    ```bash
+    # To launch Jupyter Notebook
+    uv run jupyter notebook
+    ```
+4.  Once Jupyter opens in your browser, navigate to the `Notebook/` directory and open the `Project_Walkthrough.ipynb` file.
+
 ## Makefile Commands
 
 The project includes a `Makefile` with several commands to streamline development and execution:
