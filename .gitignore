@@ -19,3 +19,6 @@ htmlcov/
 .env.dev
 .env.test
 .env.prod
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
