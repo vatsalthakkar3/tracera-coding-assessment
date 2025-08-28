@@ -48,7 +48,7 @@ class LLMService:
     4.  **Discard Noise:** Remove any records that are completely empty or contain no meaningful information (e.g., all fields are '-').
     5.  **Maintain Structure:** The final output must be a clean list of unique records. Final Records should contain account number.
     6.  **US-style number formatting** is expected (e.g., 1,234.56). Use comma as thousand separator. Do not use periods as thousand separators. Use two decimal places for 'Cost' and 'Usage'.
-    7.  Discard any records which have more than 50% (percent) fields missing (i.e., having '-'). Use `-`for missing fields.
+    7.  Discard any records which have more than 50% (percent) fields missing (i.e., having '-'). **Do not include a record where cost is `-`.** Use `-`for missing fields.
     
     Here is the list of raw, extracted records:
     ---
