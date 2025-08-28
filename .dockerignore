@@ -1,0 +1,42 @@
+# Git files
+.git
+.gitignore
+
+# Docker files
+Dockerfile
+.dockerignore
+
+# Python virtual environment, cache, and versions
+.venv/
+__pycache__/
+*.py[oc]
+.ruff_cache/
+.mypy_cache/
+.python-version
+
+# Test and coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+tests/
+
+# Project-specific directories to exclude from the image
+docs/
+output/
+cache/
+Notebook/
+
+# Environment and configuration files
+# We ignore all .env files, but keep the example for reference if needed
+.env*
+!.env.example
+
+.pre-commit*
+
+# OS-specific files
+.DS_Store
+
+# Markdown files - ignore all but the main README
+*.md
+!README.md
+
