@@ -20,4 +20,4 @@ RUN if [ -f "pyproject.toml" ]; then \
 
 COPY . .
 
-CMD ["python", "-m", "src.main"]
+CMD ["uv", "run", "python", "-m", "src.main"]
